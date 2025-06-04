@@ -431,6 +431,7 @@ class GenerationConfig(PushToHubMixin):
         self.top_k = kwargs.pop("top_k", 50)
         self.top_p = kwargs.pop("top_p", 1.0)
         self.bottom_p = kwargs.pop("bottom_p", 1.0)
+        self.local_temperatures = kwargs.pop("local_temperatures", None)
         self.min_p = kwargs.pop("min_p", None)
         self.typical_p = kwargs.pop("typical_p", 1.0)
         self.epsilon_cutoff = kwargs.pop("epsilon_cutoff", 0.0)

@@ -271,8 +271,10 @@ class TemperatureLogitsWarper(LogitsProcessor):
     ```
     """
 
-    def __init__(self, temperature: float):
-        if not isinstance(temperature, float) or not (temperature > 0):
+    def __init__(self, temperature: float, local_temperatures: Optional[list[float]] = None):
+        if local_temperatures is not None and not all([isinstance(t, float) for t in local_temperatures]):
+            raise ValueError("Expecting list of floats for local_temperatures")
+        elif not isinstance(temperature, float) or not (temperature > 0):  # local_temps take precedence
             except_msg = (
                 f"`temperature` (={temperature}) has to be a strictly positive float, otherwise your next token "
                 "scores will be invalid."
@@ -281,11 +283,27 @@ class TemperatureLogitsWarper(LogitsProcessor):
                 except_msg += " If you're looking for greedy decoding strategies, set `do_sample=False`."
             raise ValueError(except_msg)
 
-        self.temperature = temperature
+        self.global_temperature = temperature
+        self.local_temperatures = (torch.FloatTensor(local_temperatures).unsqueeze(-1)
+                                   if local_temperatures is not None
+                                   else None)
+        self.local_temperatures_curr_pos = 0
+
+    def _get_temps(self, k):
+        # Most likely, k == len(self.local_temperatures) since we pass this in per batch already.
+        if self.local_temperatures is not None:
+            batched_temps = \
+                self.local_temperatures[self.local_temperatures_curr_pos : self.local_temperatures_curr_pos + k].unsqueeze(-1)
+            self.local_temperatures_curr_pos += k
+            return batched_temps
+        else:
+            return torch.ones((k, 1)) * self.global_temperature
 
     @add_start_docstrings(LOGITS_PROCESSOR_INPUTS_DOCSTRING)
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
-        scores_processed = scores / self.temperature
+        batch_size = input_ids.shape[0]
+        # Apply element-wise temperature for uneven scaling.
+        scores_processed = scores / self._get_temps(k=batch_size)
         return scores_processed
 
 
