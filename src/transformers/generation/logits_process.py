@@ -271,7 +271,7 @@ class TemperatureLogitsWarper(LogitsProcessor):
     ```
     """
 
-    def __init__(self, temperature: float, local_temperatures: Optional[list[float]] = None):
+    def __init__(self, temperature: float, local_temperatures: Optional[list[float]] = None, device: str = 'cpu'):
         if local_temperatures is not None and not all([isinstance(t, float) for t in local_temperatures]):
             raise ValueError("Expecting list of floats for local_temperatures")
         elif not isinstance(temperature, float) or not (temperature > 0):  # local_temps take precedence
@@ -284,7 +284,7 @@ class TemperatureLogitsWarper(LogitsProcessor):
             raise ValueError(except_msg)
 
         self.global_temperature = temperature
-        self.local_temperatures = (torch.FloatTensor(local_temperatures).unsqueeze(-1)
+        self.local_temperatures = (torch.FloatTensor(local_temperatures, device=device).unsqueeze(-1)
                                    if local_temperatures is not None
                                    else None)
         self.local_temperatures_curr_pos = 0
