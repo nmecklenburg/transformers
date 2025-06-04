@@ -55,6 +55,7 @@ else:
     ]
     _import_structure["logits_process"] = [
         "AlternatingCodebooksLogitsProcessor",
+        "BottomPLogitsWarper",
         "ClassifierFreeGuidanceLogitsProcessor",
         "EncoderNoRepeatNGramLogitsProcessor",
         "EncoderRepetitionPenaltyLogitsProcessor",
@@ -215,6 +216,7 @@ if TYPE_CHECKING:
         )
         from .logits_process import (
             AlternatingCodebooksLogitsProcessor,
+            BottomPLogitsWarper,
             ClassifierFreeGuidanceLogitsProcessor,
             EncoderNoRepeatNGramLogitsProcessor,
             EncoderRepetitionPenaltyLogitsProcessor,

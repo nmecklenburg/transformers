@@ -430,6 +430,7 @@ class GenerationConfig(PushToHubMixin):
         self.temperature = kwargs.pop("temperature", 1.0)
         self.top_k = kwargs.pop("top_k", 50)
         self.top_p = kwargs.pop("top_p", 1.0)
+        self.bottom_p = kwargs.pop("bottom_p", 1.0)
         self.min_p = kwargs.pop("min_p", None)
         self.typical_p = kwargs.pop("typical_p", 1.0)
         self.epsilon_cutoff = kwargs.pop("epsilon_cutoff", 0.0)
@@ -670,6 +671,8 @@ class GenerationConfig(PushToHubMixin):
                 )
             if self.top_p is not None and self.top_p != 1.0:
                 minor_issues["top_p"] = greedy_wrong_parameter_msg.format(flag_name="top_p", flag_value=self.top_p)
+            if self.bottom_p is not None and self.bottom_p != 1.0:
+                minor_issues["bottom_p"] = greedy_wrong_parameter_msg.format(flag_name="bottom_p", flag_value=self.bottom_p)
             if self.min_p is not None:
                 minor_issues["min_p"] = greedy_wrong_parameter_msg.format(flag_name="min_p", flag_value=self.min_p)
             if self.typical_p is not None and self.typical_p != 1.0:
