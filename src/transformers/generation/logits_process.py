@@ -287,15 +287,10 @@ class TemperatureLogitsWarper(LogitsProcessor):
         self.local_temperatures = (torch.tensor(local_temperatures, dtype=torch.float, device=device).unsqueeze(-1)
                                    if local_temperatures is not None
                                    else None)
-        self.local_temperatures_curr_pos = 0
 
     def _get_temps(self, k):
-        # Most likely, k == len(self.local_temperatures) since we pass this in per batch already.
         if self.local_temperatures is not None:
-            batched_temps = \
-                self.local_temperatures[self.local_temperatures_curr_pos : self.local_temperatures_curr_pos + k].unsqueeze(-1)
-            self.local_temperatures_curr_pos += k
-            return batched_temps
+            return self.local_temperatures
         else:
             return torch.ones((k, 1)) * self.global_temperature
 
