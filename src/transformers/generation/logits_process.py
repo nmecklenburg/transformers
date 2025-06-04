@@ -488,7 +488,7 @@ class TopPLogitsWarper(LogitsProcessor):
 
 
 class BottomPLogitsWarper(LogitsProcessor):
-    def __init__(self, bottom_p: float, filter_value: float = float("Inf"), min_tokens_to_keep: int = 1):
+    def __init__(self, bottom_p: float, filter_value: float = -float("Inf"), min_tokens_to_keep: int = 1):
         bottom_p = float(bottom_p)
         if bottom_p < 0 or bottom_p > 1.0:
             raise ValueError(f"`bottom_p` has to be a float > 0 and < 1, but is {bottom_p}")
