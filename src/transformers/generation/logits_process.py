@@ -292,7 +292,7 @@ class TemperatureLogitsWarper(LogitsProcessor):
         if self.local_temperatures is not None:
             return self.local_temperatures
         else:
-            return torch.ones((k, 1)) * self.global_temperature
+            return self.global_temperature
 
     @add_start_docstrings(LOGITS_PROCESSOR_INPUTS_DOCSTRING)
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
